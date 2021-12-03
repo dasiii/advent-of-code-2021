@@ -1,9 +1,38 @@
 import fs from 'fs';
 console.log('start...');
 
+// Part one
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  const bits: Array<string> = data.split('\n');
+  const bitCountsByColumn = getBitCountsByColumn(bits);
+  const rates = getRates(bitCountsByColumn);
+  console.log('Answer one: ', rates.epsilon * rates.gamma);
+});
+
+// Part two
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
+  const bits: Array<string> = data.split('\n');
+  const oxygenRating = getRating(Ratings.Oxygen, bits);
+  const CO2Rating = getRating(Ratings.CO2, bits);
+  console.log('Answer two: ', oxygenRating * CO2Rating);
+});
+
 interface Rates {
   gamma: number;
   epsilon: number;
+}
+
+enum Ratings {
+  Oxygen,
+  CO2,
 }
 
 const getRates = function (bitCountsByColumn: Array<[number, number]>): Rates {
@@ -55,68 +84,28 @@ const getBitCountsByColumn = function (
   }, []);
 };
 
-fs.readFile('./input.txt', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  const bits: Array<string> = data.split('\n');
-  const bitCountsByColumn = getBitCountsByColumn(bits);
-  const rates = getRates(bitCountsByColumn);
-  console.log('Answer one: ', rates.epsilon * rates.gamma);
-});
-
-// Part two
-fs.readFile('./input.txt', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  const bits: Array<string> = data.split('\n');
-  let bitsClone = [...bits];
-  let oxygenBitString = '';
-  let co2BitString = '';
+const getRating = function (ratingType: Ratings, bits: Array<string>): number {
+  const bitsClone = [...bits];
+  let bitString = '0';
 
   for (let i = 0; i < bits.length; i++) {
-    // get most common bit in column i for all bit strings
     const bitCountsByColumn = getBitCountsByColumn(bitsClone);
-    const mostCommonBit = getMaxBitStringForOxygenRating(bitCountsByColumn[i]);
+    const matchBit =
+      ratingType == Ratings.Oxygen
+        ? getMaxBitStringForOxygenRating(bitCountsByColumn[i])
+        : getMinBitStringForCO2Rating(bitCountsByColumn[i]);
 
     if (bitsClone.filter((b) => b !== null).length == 1) {
-      //console.log('Only one bit string left for oxygen, returning');
-      oxygenBitString += bitsClone.filter((b) => b !== null)[0];
+      bitString = bitsClone.filter((b) => b !== null)[0];
       break;
     }
 
-    // loop through remaining bitstring and see what column i character is
-    // if it doesn't match the most common bit
     for (let j = 0; j < bits.length; j++) {
-      if (bitsClone[j]?.[i] !== mostCommonBit) {
+      if (bitsClone[j]?.[i] !== matchBit) {
         bitsClone[j] = null;
       }
     }
   }
 
-  bitsClone = [...bits];
-
-  for (let i = 0; i < bits.length; i++) {
-    // get least common bit in column i for all bit strings
-    const bitCountsByColumn = getBitCountsByColumn(bitsClone);
-    const leastCommonBit = getMinBitStringForCO2Rating(bitCountsByColumn[i]);
-
-    if (bitsClone.filter((b) => b !== null).length == 1) {
-      //console.log('Only one bit string left for co2, returning');
-      co2BitString += bitsClone.filter((b) => b !== null)[0];
-      break;
-    }
-    for (let j = 0; j < bits.length; j++) {
-      if (bitsClone[j]?.[i] !== leastCommonBit) {
-        bitsClone[j] = null;
-      }
-    }
-  }
-
-  const oxygenBitRating = parseInt(oxygenBitString, 2);
-  const co2BitRating = parseInt(co2BitString, 2);
-  console.log('Answer two: ', oxygenBitRating * co2BitRating);
-});
+  return parseInt(bitString, 2);
+};
