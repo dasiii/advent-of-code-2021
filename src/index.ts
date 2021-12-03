@@ -49,7 +49,7 @@ const getRates = function (bitCountsByColumn: Array<[number, number]>): Rates {
 };
 
 const getMaxBitString = function (bitCounts: [number, number]): string {
-  return bitCounts.indexOf(Math.max(...bitCounts)).toString(); // could be an error here if there are any with equal bit counts.
+  return bitCounts.indexOf(Math.max(...bitCounts)).toString();
 };
 
 const getMinBitString = function (bitCounts: [number, number]): string {
