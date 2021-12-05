@@ -7,5 +7,19 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     console.error(err);
     return;
   }
-  console.log(data);
+  // console.log(
+  //   data.split('\n').map((i) =>
+  //     i
+  //       .replace('\r', '')
+  //       .split('->')
+  //       .map((i) => i.trim().split(','))
+  //   )
+  // );
+  const test = data.split('\n').map((i) =>
+    i
+      .replace('\r', '')
+      .split('->')
+      .map((i) => i.trim().split(','))
+  );
+  console.log(test);
 });
