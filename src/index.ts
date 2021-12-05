@@ -106,6 +106,18 @@ const getFirstWinningBoards = function (
   return winningBoards;
 };
 
+const getUnmarkedNumberSum = function (board: WinningBoard): number {
+  return board.board
+    .flat()
+    .filter((i) => {
+      return !i[1];
+    })
+    .map((i) => i[0])
+    .reduce((acc, current) => {
+      return acc + current;
+    }, 0);
+};
+
 // Part one
 fs.readFile('./input.txt', 'utf8', (err, data) => {
   if (err) {
@@ -120,13 +132,7 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
     console.log('No winning boards...');
     return;
   }
-  const unmarkedNumbersSum = firstWinningBoard.board
-    .flat()
-    .filter((i) => !i[1])
-    .map((i) => i[0])
-    .reduce((acc, current) => {
-      return acc + current;
-    }, 0);
+  const unmarkedNumbersSum = getUnmarkedNumberSum(firstWinningBoard);
   console.log(
     'Answer one: ',
     unmarkedNumbersSum * firstWinningBoard.winningNumber
@@ -150,15 +156,7 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
   const lastWinningBoard = winningBoards.reduce((acc, current) =>
     acc.rank > current.rank ? acc : current
   );
-  const unmarkedNumbersSum = lastWinningBoard.board
-    .flat()
-    .filter((i) => {
-      return !i[1];
-    })
-    .map((i) => i[0])
-    .reduce((acc, current) => {
-      return acc + current;
-    }, 0);
+  const unmarkedNumbersSum = getUnmarkedNumberSum(lastWinningBoard);
   console.log(
     'Answer two: ',
     unmarkedNumbersSum * lastWinningBoard.winningNumber
