@@ -55,9 +55,11 @@ const getFirstWinningBoards = function (
   for (const num of setup.numbers) {
     // mark cells as true for the number drawn
     for (const board of setup.boards) {
-      for (const row of board) {
-        for (const cell of row) {
-          if (cell[0] === num) cell[1] = true;
+      if (!winningBoards.some((b) => b.board == board)) {
+        for (const row of board) {
+          for (const cell of row) {
+            if (cell[0] === num) cell[1] = true;
+          }
         }
       }
     }
@@ -132,33 +134,33 @@ fs.readFile('./input.txt', 'utf8', (err, data) => {
 });
 
 // Part two
-// fs.readFile('./input.txt', 'utf8', (err, data) => {
-//   if (err) {
-//     console.error(err);
-//     return;
-//   }
+fs.readFile('./input.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(err);
+    return;
+  }
 
-//   const setup = setupGame(data.split('\n'));
-//   const winningBoards = getFirstWinningBoards(setup);
-//   if (!winningBoards.length) {
-//     console.log('No winning boards...');
-//     return;
-//   }
+  const setup = setupGame(data.split('\n'));
+  const winningBoards = getFirstWinningBoards(setup);
+  if (!winningBoards.length) {
+    console.log('No winning boards...');
+    return;
+  }
 
-//   const lastWinningBoard = winningBoards.reduce((acc, current) =>
-//     acc.rank > current.rank ? acc : current
-//   );
-//   const unmarkedNumbersSum = lastWinningBoard.board
-//     .flat()
-//     .filter((i) => {
-//       return !i[1];
-//     })
-//     .map((i) => i[0]);
-//   // .reduce((acc, current) => {
-//   //   return acc + current;
-//   // }, 0);
-//   // console.log(
-//   //   'Answer two: ',
-//   //   unmarkedNumbersSum * lastWinningBoard.winningNumber
-//   // );
-// });
+  const lastWinningBoard = winningBoards.reduce((acc, current) =>
+    acc.rank > current.rank ? acc : current
+  );
+  const unmarkedNumbersSum = lastWinningBoard.board
+    .flat()
+    .filter((i) => {
+      return !i[1];
+    })
+    .map((i) => i[0])
+    .reduce((acc, current) => {
+      return acc + current;
+    }, 0);
+  console.log(
+    'Answer two: ',
+    unmarkedNumbersSum * lastWinningBoard.winningNumber
+  );
+});
